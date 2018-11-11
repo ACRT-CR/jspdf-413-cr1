@@ -20,6 +20,13 @@
   var pdfEscape = function (value) {return value.replace(/\\/g, '\\\\').replace(/\(/g, '\\(').replace(/\)/g, '\\)')};  
   var pdfUnescape = function (value) {return value.replace(/\\\\/g, '\\').replace(/\\\(/g, '(').replace(/\\\)/g, ')');};
   
+  var pdfEscapeName = function (value) {
+    return value.replace(/[#\s()<>[\]{}\/%]/g, function (character) {
+      var hex = character.charCodeAt(0).toString(16).toUpperCase();
+      return '#' + (hex.length === 1 ? '0' + hex : hex);
+    });
+  };
+
   var f2 = function (number) {
       if (isNaN(number)) {
         throw new Error('Invalid argument passed to jsPDF.f2');
@@ -1929,7 +1936,11 @@
           return _AS;
         },
         set: function (value) {
-          _AS = value;
+          var name = value === undefined || value === null ? '' : value.toString();
+          if (name.substr(0, 1) === '/') {
+            name = name.substr(1);
+          }
+          _AS = '/' + pdfEscapeName(name);
         }
       });
       
@@ -1947,7 +1958,7 @@
           return _AS.substr(1, _AS.length-1);
         },
         set: function (value) {
-          _AS = '/' + value;
+          this.AS = value;
         }
       });
 
@@ -2080,7 +2091,11 @@
           return _AS;
         },
         set: function (value) {
-          _AS = value;
+          var name = value === undefined || value === null ? '' : value.toString();
+          if (name.substr(0, 1) === '/') {
+            name = name.substr(1);
+          }
+          _AS = '/' + pdfEscapeName(name);
         }
       });
       
@@ -2097,7 +2112,11 @@
           return _AS.substr(1, _AS.length-1);
         },
         set: function (value) {
-          _AS = '/' + value;
+          var name = value === undefined || value === null ? '' : value.toString();
+          if (name.substr(0, 1) === '/') {
+            name = name.substr(1);
+          }
+          _AS = '/' + pdfEscapeName(name);
         }
       });
       this.optionName = name;
